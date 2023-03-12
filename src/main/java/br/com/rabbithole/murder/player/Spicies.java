@@ -4,9 +4,5 @@ public enum Spicies {
     NONE,
     DETECTIVE,
     MURDERER,
-    INNOCENT
-
-    public Spicies get() {
-
-    }
+    INNOCENT,
 }
