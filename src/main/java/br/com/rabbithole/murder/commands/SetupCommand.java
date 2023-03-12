@@ -1,5 +1,6 @@
 package br.com.rabbithole.murder.commands;
 
+import br.com.rabbithole.murder.Murder;
 import br.com.rabbithole.murder.utils.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -30,7 +31,30 @@ public class SetupCommand implements CommandExecutor {
             return true;
         }
 
+        //setup <option> <value>
+
+        if (args.length != 2) {
+            player.sendMessage(StringUtils.formatString("<red>Utilize: /setup <Opção> <Valor>"));
+            return true;
+        }
+
+        switch (args[0]) {
+            case "players" -> minimalPlayers(player, args);
+            default -> player.sendMessage(StringUtils.formatString("<red>Opções: /setup <players> <Quantidade de Players>"));
+        }
 
         return false;
+    }
+
+    private void minimalPlayers(Player player, String[] args) {
+        int newNumber = Integer.parseInt(args[1]);
+        if (newNumber == Murder.getNumberOfPlayers()) {
+            player.sendMessage(StringUtils.formatString("<red>O número de jogadores que você deseja definir é o mesmo que já está configurado!"));
+            return;
+        }
+
+        Murder.getInstance().getConfig().set("players", newNumber);
+        Murder.setNumberOfPlayers(newNumber);
+        player.sendMessage(StringUtils.formatString("<green>Número de jogadores mínimos atualizado com Sucesso! (%o)".formatted(newNumber)));
     }
 }
