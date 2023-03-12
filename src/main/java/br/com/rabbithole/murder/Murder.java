@@ -1,5 +1,6 @@
 package br.com.rabbithole.murder;
 
+import br.com.rabbithole.murder.commands.SetupCommand;
 import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -23,7 +24,9 @@ public final class Murder extends JavaPlugin {
         events();
     }
 
-    void commands() {}
+    void commands() {
+        new SetupCommand();
+    }
 
     void events() {}
 }
