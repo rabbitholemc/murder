@@ -18,6 +18,7 @@ public final class Murder extends JavaPlugin {
     }
 
     void registers() {
+        saveDefaultConfig();
         commands();
         events();
     }
