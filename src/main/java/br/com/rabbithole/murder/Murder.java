@@ -1,6 +1,7 @@
 package br.com.rabbithole.murder;
 
 import br.com.rabbithole.murder.commands.SetupCommand;
+import br.com.rabbithole.murder.components.ScoreboardManager;
 import br.com.rabbithole.murder.utils.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.event.HandlerList;
@@ -27,6 +28,7 @@ public final class Murder extends JavaPlugin {
         saveDefaultConfig();
         commands();
         events();
+        ScoreboardManager.init(this);
     }
 
     void commands() {
