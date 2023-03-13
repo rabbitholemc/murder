@@ -8,6 +8,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public final class Murder extends JavaPlugin {
     private static int numberOfPlayers;
+    private static final GameManager gameManager = new GameManager();
 
     @Override
     public void onEnable() {
