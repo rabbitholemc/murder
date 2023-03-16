@@ -2,21 +2,21 @@ package br.com.rabbithole.murder;
 
 import br.com.rabbithole.murder.commands.SetupCommand;
 import br.com.rabbithole.murder.components.ScoreboardManager;
+import br.com.rabbithole.murder.events.OnJoin;
 import br.com.rabbithole.murder.utils.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class Murder extends JavaPlugin {
-    private static int numberOfPlayers;
-    private static final GameManager gameManager = new GameManager();
+    private static GameManager gameManager;
 
     @Override
     public void onEnable() {
         // Plugin startup logic
         registers();
-        numberOfPlayers = getInstance().getConfig().getInt("players");
-        Bukkit.getConsoleSender().sendMessage(StringUtils.formatString("<green>Número de Jogadores Configurados: " + numberOfPlayers));
+        gameManager = new GameManager(this);
+        Bukkit.getConsoleSender().sendMessage(StringUtils.formatString("<green>Número de Jogadores Configurados: " + gameManager.getMaxOfPlayers()));
     }
 
     @Override
@@ -33,20 +33,14 @@ public final class Murder extends JavaPlugin {
     }
 
     void commands() {
-        new SetupCommand();
+        new SetupCommand(this);
     }
 
-    void events() {}
-
-    public static Murder getInstance() {
-        return Murder.getPlugin(Murder.class);
+    void events() {
+        new OnJoin(this);
     }
 
-    public static int getNumberOfPlayers() {
-        return numberOfPlayers;
-    }
-
-    public static void setNumberOfPlayers(int numberOfPlayers) {
-        Murder.numberOfPlayers = numberOfPlayers;
+    public static GameManager getGameManager() {
+        return gameManager;
     }
 }

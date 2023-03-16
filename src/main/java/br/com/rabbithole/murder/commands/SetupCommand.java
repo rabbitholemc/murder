@@ -8,15 +8,18 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 
 public class SetupCommand implements CommandExecutor {
 
-    public SetupCommand() {
-        PluginCommand command = Objects.requireNonNull(Bukkit.getPluginCommand("setup"));
-        command.setExecutor(this);
+    private final Plugin plugin;
+
+    public SetupCommand(Plugin plugin) {
+        this.plugin = plugin;
+        Objects.requireNonNull(plugin.getServer().getPluginCommand("setup")).setExecutor(this);
     }
 
     @Override
@@ -48,13 +51,13 @@ public class SetupCommand implements CommandExecutor {
 
     private void minimalPlayers(Player player, String[] args) {
         int newNumber = Integer.parseInt(args[1]);
-        if (newNumber == Murder.getNumberOfPlayers()) {
+        if (newNumber == Murder.getGameManager().getMaxOfPlayers()) {
             player.sendMessage(StringUtils.formatString("<red>O número de jogadores que você deseja definir é o mesmo que já está configurado!"));
             return;
         }
 
-        Murder.getInstance().getConfig().set("players", newNumber);
-        Murder.setNumberOfPlayers(newNumber);
+        plugin.getConfig().set("players", newNumber);
+        Murder.getGameManager().setMaxOfPlayers(newNumber);
         player.sendMessage(StringUtils.formatString("<green>Número de jogadores mínimos atualizado com Sucesso! (%o)".formatted(newNumber)));
     }
 }

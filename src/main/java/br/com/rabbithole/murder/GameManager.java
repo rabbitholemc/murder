@@ -1,20 +1,43 @@
 package br.com.rabbithole.murder;
 
-import br.com.rabbithole.murder.player.Spicies;
+import br.com.rabbithole.murder.player.Role;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 public class GameManager {
 
+    private Plugin plugin;
+    private int maxOfPlayers;
+    private final int minimalPlayerToPlay = 2;
     private GameStatus gameStatus = GameStatus.LOBBY;
-    private HashMap<Player, Spicies> playersAndSpiciesMap = new HashMap<>();
+    private final Set<Player> playerSet = new HashSet<>();
+    private final HashMap<Player, Role> playerRoleHashMap = new HashMap<>();
 
+    public GameManager(Plugin plugin) {
+        this.plugin = plugin;
+        maxOfPlayers = plugin.getConfig().getInt("players");
+    }
 
-    public Spicies getPlayerSpicie(Player player) {
-        return playersAndSpiciesMap.get(player);
+    public int getMaxOfPlayers() {
+        return maxOfPlayers;
+    }
+
+    public void setMaxOfPlayers(int number) {
+        maxOfPlayers = number;
+    }
+
+    public void addPlayer(Player player) {
+        playerSet.add(player);
+    }
+
+    public int getAmountPlayers() {
+        return playerSet.size();
+    }
+
+    public Role getPlayerRole(Player player) {
+        return playerRoleHashMap.get(player);
     }
 
     public GameStatus getGameStatus() {
@@ -25,51 +48,49 @@ public class GameManager {
         this.gameStatus = gameStatus;
     }
 
-    public void startGame() {
-        startingStatus();
+    private void onLobby() {
+        if(getAmountPlayers() >= minimalPlayerToPlay) {
+            setGameStatus(GameStatus.STARTING);
+            return;
+        }
     }
 
-    private void lobbyStatus() {
-
-    }
-
-    private void startingStatus() {
-        setGameStatus(GameStatus.STARTING);
-
-        sortSpiciesToPlayers(new ArrayList<Player>(playersAndSpiciesMap.keySet()));
-
-        playingStatus();
-    }
-
-    private void playingStatus() {
-        setGameStatus(GameStatus.PLAYING);
-    }
-
-    private void endStatus() {
+    public void start() {
 
     }
 
-    public void sortSpiciesToPlayers(List<Player> playerList) {
-        /*
-        *   Pegar players
-        *   sortir um player e  dar detetive
-        *   sortir outro e dar murderer
-        *   setar todos player restante para inocente
-        **/
-        // Sort and set Detective and remove detective to playerList variable.
-        Player sortedPlayer = (Player) playerList.stream().sorted();
-        playersAndSpiciesMap.put(sortedPlayer, Spicies.DETECTIVE);
-        playerList.remove(sortedPlayer);
+    private void onStarting() {
+        if(getAmountPlayers() >= minimalPlayerToPlay) {
+            setGameStatus(GameStatus.PLAYING);
+            raffleRoleToPlayers(new ArrayList<Player>(playerRoleHashMap.keySet()));
+            return;
+        }
+    }
 
-        //Sort and set Murder and remove detective to playerList variable.
-        sortedPlayer = (Player) playerList.stream().sorted();
-        playersAndSpiciesMap.put(sortedPlayer, Spicies.MURDERER);
-        playerList.remove(sortedPlayer);
+    private void onPlaying() {
+
+    }
+
+    public void raffleRoleToPlayers(List<Player> playerList) {
+        Random random = new Random();
+
+        // Random and set Detective and remove Detective to playerList variable.
+        Player randomPlayer = (Player) playerList.get(random.nextInt(playerList.size()));
+        playerRoleHashMap.put(randomPlayer, Role.DETECTIVE);
+        playerList.remove(randomPlayer);
+
+        //Random and set Murder and remove Murder to playerList variable.
+        randomPlayer = (Player) playerList.get(random.nextInt(playerList.size()));
+        playerRoleHashMap.put(randomPlayer, Role.MURDERER);
+        playerList.remove(randomPlayer);
 
         playerList.forEach(player -> {
-            playersAndSpiciesMap.put(player, Spicies.INNOCENT);
+            playerRoleHashMap.put(player, Role.INNOCENT);
         });
     }
 
+    public boolean canStart() {
+        return playerSet.size() >= minimalPlayerToPlay;
+    }
 
 }

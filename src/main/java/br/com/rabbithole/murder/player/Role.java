@@ -1,6 +1,6 @@
 package br.com.rabbithole.murder.player;
 
-public enum Spicies {
+public enum Role {
     NONE,
     DETECTIVE,
     MURDERER,
